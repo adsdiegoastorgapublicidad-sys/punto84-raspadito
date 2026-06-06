@@ -1,0 +1,1664 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Punto84 — Raspadito Premium</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold: #c9a84c;
+  --gold-light: #e8c97a;
+  --gold-dark: #8a6a1f;
+  --gold-glow: rgba(201,168,76,0.25);
+  --black: #080808;
+  --black-2: #0f0f0f;
+  --black-3: #161616;
+  --black-4: #1e1e1e;
+  --black-5: #2a2a2a;
+  --white: #f5f0e8;
+  --white-dim: #a89880;
+  --red: #c0392b;
+  --green: #27ae60;
+  --scratch-top: #1a1208;
+  --scratch-pattern: #2a1f08;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+html, body {
+  height:100%;
+  background:var(--black);
+  color:var(--white);
+  font-family:'DM Sans',sans-serif;
+  overflow:hidden;
+  user-select:none;
+}
+
+/* SCREENS */
+.screen {
+  position:fixed;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity 0.4s ease, transform 0.4s ease;
+  transform:translateY(20px);
+  overflow-y:auto;
+}
+
+.screen.active {
+  opacity:1;
+  pointer-events:all;
+  transform:translateY(0);
+}
+
+/* BG TEXTURE */
+body::before {
+  content:'';
+  position:fixed;
+  inset:0;
+  background:
+    radial-gradient(ellipse at 20% 20%, rgba(201,168,76,0.04) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 80%, rgba(201,168,76,0.03) 0%, transparent 60%);
+  pointer-events:none;
+  z-index:0;
+}
+
+/* TOP LINE */
+body::after {
+  content:'';
+  position:fixed;
+  top:0; left:0; right:0;
+  height:2px;
+  background:linear-gradient(90deg, transparent, var(--gold), var(--gold-light), var(--gold), transparent);
+  z-index:999;
+}
+
+/* LOGO */
+.logo {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(28px,6vw,42px);
+  letter-spacing:0.12em;
+  color:var(--gold);
+  line-height:1;
+  text-align:center;
+}
+
+.logo-sub {
+  font-family:'Crimson Pro',serif;
+  font-style:italic;
+  font-size:13px;
+  color:var(--white-dim);
+  letter-spacing:0.1em;
+  margin-top:2px;
+  text-align:center;
+}
+
+/* ===================== CODE SCREEN ===================== */
+#screen-code {
+  gap:32px;
+  background:var(--black);
+  z-index:10;
+}
+
+.code-hero {
+  text-align:center;
+}
+
+.code-icon {
+  width:72px;
+  height:72px;
+  border:1.5px solid var(--gold-dark);
+  border-radius:4px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin:0 auto 20px;
+  font-size:32px;
+  background:linear-gradient(135deg, var(--black-3), var(--black-4));
+  position:relative;
+  overflow:hidden;
+}
+
+.code-icon::after {
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(135deg, rgba(201,168,76,0.08), transparent);
+}
+
+.code-title {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(32px,8vw,52px);
+  letter-spacing:0.06em;
+  line-height:0.95;
+  margin-bottom:8px;
+}
+
+.code-title span { color:var(--gold); display:block; }
+
+.code-desc {
+  font-family:'Crimson Pro',serif;
+  font-style:italic;
+  font-size:16px;
+  color:var(--white-dim);
+  max-width:280px;
+  margin:0 auto;
+  line-height:1.6;
+}
+
+.code-form {
+  width:100%;
+  max-width:340px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.code-input-wrap {
+  position:relative;
+}
+
+.code-input {
+  width:100%;
+  background:var(--black-3);
+  border:1px solid var(--black-5);
+  border-radius:3px;
+  padding:14px 20px;
+  font-family:'Bebas Neue',sans-serif;
+  font-size:22px;
+  letter-spacing:0.25em;
+  color:var(--white);
+  text-align:center;
+  text-transform:uppercase;
+  outline:none;
+  transition:border-color 0.2s, box-shadow 0.2s;
+}
+
+.code-input:focus {
+  border-color:var(--gold-dark);
+  box-shadow:0 0 0 3px var(--gold-glow);
+}
+
+.code-input::placeholder {
+  color:var(--black-5);
+  letter-spacing:0.15em;
+  font-size:18px;
+}
+
+.code-input.error {
+  border-color:var(--red);
+  animation:shake 0.4s ease;
+}
+
+@keyframes shake {
+  0%,100%{transform:translateX(0)}
+  20%{transform:translateX(-8px)}
+  40%{transform:translateX(8px)}
+  60%{transform:translateX(-5px)}
+  80%{transform:translateX(5px)}
+}
+
+.code-error {
+  font-family:'DM Sans',sans-serif;
+  font-size:12px;
+  color:var(--red);
+  text-align:center;
+  min-height:16px;
+  letter-spacing:0.05em;
+}
+
+.btn-primary {
+  width:100%;
+  background:var(--gold);
+  border:none;
+  border-radius:3px;
+  padding:14px 24px;
+  font-family:'Bebas Neue',sans-serif;
+  font-size:18px;
+  letter-spacing:0.2em;
+  color:var(--black);
+  cursor:pointer;
+  transition:all 0.2s;
+  position:relative;
+  overflow:hidden;
+}
+
+.btn-primary:hover { background:var(--gold-light); transform:translateY(-1px); }
+.btn-primary:active { transform:translateY(0) scale(0.98); }
+
+.btn-primary::after {
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+}
+
+.admin-link {
+  font-family:'DM Sans',sans-serif;
+  font-size:11px;
+  color:var(--black-5);
+  text-align:center;
+  cursor:pointer;
+  letter-spacing:0.1em;
+  transition:color 0.2s;
+  margin-top:8px;
+}
+
+.admin-link:hover { color:var(--white-dim); }
+
+/* ===================== SCRATCH SCREEN ===================== */
+#screen-scratch {
+  gap:20px;
+  z-index:10;
+}
+
+.scratch-header {
+  text-align:center;
+}
+
+.scratch-title {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(24px,5vw,36px);
+  letter-spacing:0.08em;
+  color:var(--white);
+  line-height:1;
+  margin-bottom:4px;
+}
+
+.scratch-sub {
+  font-family:'Crimson Pro',serif;
+  font-style:italic;
+  font-size:15px;
+  color:var(--gold);
+}
+
+.scratch-wrap {
+  position:relative;
+  width:min(320px, 88vw);
+  height:min(200px, 55vw);
+  border-radius:8px;
+  overflow:hidden;
+  box-shadow:0 0 40px rgba(201,168,76,0.15), 0 0 0 1px var(--gold-dark);
+  flex-shrink:0;
+}
+
+/* Prize underneath */
+.prize-reveal {
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  background:radial-gradient(ellipse at center, #1a1208 0%, #0a0a0a 100%);
+  gap:8px;
+  padding:20px;
+}
+
+.prize-emoji-big {
+  font-size:42px;
+  line-height:1;
+  filter:drop-shadow(0 0 12px var(--gold-glow));
+}
+
+.prize-name-reveal {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(14px,4vw,20px);
+  letter-spacing:0.08em;
+  color:var(--gold-light);
+  text-align:center;
+  line-height:1.2;
+}
+
+.prize-gold-line {
+  width:40px;
+  height:1px;
+  background:var(--gold);
+  margin:2px 0;
+}
+
+/* Scratch canvas on top */
+#scratchCanvas {
+  position:absolute;
+  inset:0;
+  cursor:crosshair;
+  touch-action:none;
+}
+
+.scratch-progress {
+  width:min(320px, 88vw);
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+.progress-label {
+  font-family:'DM Sans',sans-serif;
+  font-size:11px;
+  letter-spacing:0.15em;
+  color:var(--white-dim);
+  text-transform:uppercase;
+  display:flex;
+  justify-content:space-between;
+}
+
+.progress-bar {
+  height:3px;
+  background:var(--black-4);
+  border-radius:2px;
+  overflow:hidden;
+}
+
+.progress-fill {
+  height:100%;
+  background:linear-gradient(90deg, var(--gold-dark), var(--gold-light));
+  border-radius:2px;
+  width:0%;
+  transition:width 0.2s ease;
+}
+
+.scratch-hint {
+  font-family:'Crimson Pro',serif;
+  font-style:italic;
+  font-size:14px;
+  color:var(--white-dim);
+  text-align:center;
+  animation:pulse-hint 2s ease infinite;
+}
+
+@keyframes pulse-hint {
+  0%,100%{opacity:0.6}
+  50%{opacity:1}
+}
+
+/* ===================== PRIZE SCREEN ===================== */
+#screen-prize {
+  gap:24px;
+  z-index:10;
+}
+
+.prize-card {
+  width:100%;
+  max-width:340px;
+  background:var(--black-3);
+  border:1px solid var(--gold-dark);
+  border-radius:6px;
+  overflow:hidden;
+  position:relative;
+}
+
+.prize-card::before {
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(135deg, rgba(201,168,76,0.04), transparent 60%);
+  pointer-events:none;
+}
+
+.prize-card-top {
+  background:linear-gradient(135deg, #1a1208, #0f0d06);
+  padding:28px 24px;
+  text-align:center;
+  border-bottom:1px solid var(--gold-dark);
+  position:relative;
+  overflow:hidden;
+}
+
+.prize-card-top::after {
+  content:'';
+  position:absolute;
+  bottom:-20px; left:50%;
+  transform:translateX(-50%);
+  width:120px; height:40px;
+  background:radial-gradient(ellipse, var(--gold-glow), transparent);
+}
+
+.prize-congrats {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:11px;
+  letter-spacing:0.35em;
+  color:var(--gold-dark);
+  margin-bottom:12px;
+  text-transform:uppercase;
+}
+
+.prize-emoji-display {
+  font-size:52px;
+  line-height:1;
+  margin-bottom:12px;
+  display:block;
+  filter:drop-shadow(0 0 16px var(--gold-glow));
+  animation:float 3s ease infinite;
+}
+
+@keyframes float {
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-6px)}
+}
+
+.prize-name-display {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(18px,5vw,26px);
+  letter-spacing:0.06em;
+  color:var(--gold-light);
+  line-height:1.2;
+}
+
+.prize-card-bottom {
+  padding:16px 20px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.prize-instruction {
+  font-family:'Crimson Pro',serif;
+  font-style:italic;
+  font-size:14px;
+  color:var(--white-dim);
+  text-align:center;
+  line-height:1.5;
+  padding:10px;
+  background:var(--black-4);
+  border-radius:3px;
+  border-left:2px solid var(--gold);
+}
+
+.btn-whatsapp {
+  width:100%;
+  background:#25d366;
+  border:none;
+  border-radius:3px;
+  padding:13px 24px;
+  font-family:'Bebas Neue',sans-serif;
+  font-size:16px;
+  letter-spacing:0.15em;
+  color:#fff;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  transition:all 0.2s;
+}
+
+.btn-whatsapp:hover { background:#20bd5a; transform:translateY(-1px); }
+
+.btn-share {
+  width:100%;
+  background:transparent;
+  border:1px solid var(--gold-dark);
+  border-radius:3px;
+  padding:11px 24px;
+  font-family:'Bebas Neue',sans-serif;
+  font-size:14px;
+  letter-spacing:0.15em;
+  color:var(--gold);
+  cursor:pointer;
+  transition:all 0.2s;
+}
+
+.btn-share:hover { background:rgba(201,168,76,0.08); }
+
+.btn-again {
+  width:100%;
+  background:transparent;
+  border:none;
+  padding:8px;
+  font-family:'DM Sans',sans-serif;
+  font-size:12px;
+  letter-spacing:0.1em;
+  color:var(--black-5);
+  cursor:pointer;
+  transition:color 0.2s;
+  text-transform:uppercase;
+}
+
+.btn-again:hover { color:var(--white-dim); }
+
+/* ===================== ADMIN SCREEN ===================== */
+#screen-admin {
+  justify-content:flex-start;
+  padding:16px;
+  overflow-y:auto;
+  z-index:20;
+  background:var(--black);
+  gap:0;
+}
+
+#screen-admin.active { overflow-y:auto; }
+
+.admin-wrap {
+  width:100%;
+  max-width:600px;
+  margin:0 auto;
+  display:flex;
+  flex-direction:column;
+  gap:20px;
+  padding-bottom:40px;
+}
+
+.admin-header {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:16px 0 12px;
+  border-bottom:1px solid var(--black-5);
+}
+
+.admin-title {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:22px;
+  letter-spacing:0.1em;
+  color:var(--gold);
+}
+
+.btn-admin-exit {
+  background:transparent;
+  border:1px solid var(--black-5);
+  border-radius:2px;
+  padding:6px 12px;
+  font-family:'DM Sans',sans-serif;
+  font-size:11px;
+  letter-spacing:0.1em;
+  color:var(--white-dim);
+  cursor:pointer;
+  transition:all 0.2s;
+  text-transform:uppercase;
+}
+
+.btn-admin-exit:hover { border-color:var(--red); color:var(--red); }
+
+.admin-section {
+  background:var(--black-2);
+  border:1px solid var(--black-5);
+  border-radius:4px;
+  overflow:hidden;
+}
+
+.admin-section-header {
+  background:var(--black-3);
+  padding:12px 16px;
+  border-bottom:1px solid var(--black-5);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+
+.admin-section-title {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:14px;
+  letter-spacing:0.15em;
+  color:var(--gold);
+  text-transform:uppercase;
+}
+
+.admin-section-body { padding:16px; display:flex; flex-direction:column; gap:12px; }
+
+/* Prize item */
+.prize-item {
+  background:var(--black-3);
+  border:1px solid var(--black-5);
+  border-radius:3px;
+  padding:12px 14px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  transition:border-color 0.2s;
+}
+
+.prize-item:hover { border-color:var(--gold-dark); }
+
+.prize-emoji-input {
+  width:48px;
+  background:var(--black-4);
+  border:1px solid var(--black-5);
+  border-radius:3px;
+  padding:8px;
+  font-size:20px;
+  text-align:center;
+  color:var(--white);
+  outline:none;
+}
+
+.prize-name-input {
+  flex:1;
+  background:var(--black-4);
+  border:1px solid var(--black-5);
+  border-radius:3px;
+  padding:8px 12px;
+  font-family:'DM Sans',sans-serif;
+  font-size:13px;
+  color:var(--white);
+  outline:none;
+  transition:border-color 0.2s;
+}
+
+.prize-name-input:focus { border-color:var(--gold-dark); }
+
+.prize-prob-wrap {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:3px;
+  min-width:52px;
+}
+
+.prize-prob-input {
+  width:52px;
+  background:var(--black-4);
+  border:1px solid var(--black-5);
+  border-radius:3px;
+  padding:7px 6px;
+  font-family:'Bebas Neue',sans-serif;
+  font-size:16px;
+  letter-spacing:0.05em;
+  color:var(--gold);
+  text-align:center;
+  outline:none;
+  transition:border-color 0.2s;
+}
+
+.prize-prob-input:focus { border-color:var(--gold-dark); }
+.prize-prob-label { font-family:'DM Sans',sans-serif; font-size:9px; color:var(--white-dim); letter-spacing:0.1em; text-transform:uppercase; }
+
+.btn-delete {
+  background:transparent;
+  border:1px solid var(--black-5);
+  border-radius:2px;
+  width:28px;
+  height:28px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  color:var(--white-dim);
+  font-size:14px;
+  transition:all 0.2s;
+  flex-shrink:0;
+}
+
+.btn-delete:hover { border-color:var(--red); color:var(--red); background:rgba(192,57,43,0.08); }
+
+/* Prob total */
+.prob-total {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:10px 14px;
+  background:var(--black-4);
+  border-radius:3px;
+  border:1px solid var(--black-5);
+}
+
+.prob-total-label {
+  font-family:'DM Sans',sans-serif;
+  font-size:12px;
+  letter-spacing:0.08em;
+  color:var(--white-dim);
+  text-transform:uppercase;
+}
+
+.prob-total-value {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:18px;
+  letter-spacing:0.1em;
+  transition:color 0.2s;
+}
+
+.prob-total-value.ok { color:var(--green); }
+.prob-total-value.bad { color:var(--red); }
+
+/* Prob bar visual */
+.prob-visual {
+  height:6px;
+  background:var(--black-4);
+  border-radius:3px;
+  overflow:hidden;
+  display:flex;
+  gap:1px;
+}
+
+.prob-segment { height:100%; border-radius:1px; transition:width 0.3s ease; }
+
+/* Add prize btn */
+.btn-add-prize {
+  background:transparent;
+  border:1px dashed var(--black-5);
+  border-radius:3px;
+  padding:10px;
+  font-family:'DM Sans',sans-serif;
+  font-size:12px;
+  letter-spacing:0.12em;
+  color:var(--white-dim);
+  cursor:pointer;
+  text-align:center;
+  text-transform:uppercase;
+  transition:all 0.2s;
+  width:100%;
+}
+
+.btn-add-prize:hover { border-color:var(--gold-dark); color:var(--gold); }
+
+/* Save btn */
+.btn-save {
+  width:100%;
+  background:var(--gold);
+  border:none;
+  border-radius:3px;
+  padding:12px;
+  font-family:'Bebas Neue',sans-serif;
+  font-size:16px;
+  letter-spacing:0.2em;
+  color:var(--black);
+  cursor:pointer;
+  transition:all 0.2s;
+}
+
+.btn-save:hover { background:var(--gold-light); }
+.btn-save.saved { background:var(--green); color:#fff; }
+
+/* Code gen */
+.code-gen-row {
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+
+.qty-select {
+  background:var(--black-4);
+  border:1px solid var(--black-5);
+  border-radius:3px;
+  padding:9px 12px;
+  font-family:'DM Sans',sans-serif;
+  font-size:13px;
+  color:var(--white);
+  outline:none;
+  cursor:pointer;
+}
+
+.btn-gen {
+  flex:1;
+  background:var(--black-4);
+  border:1px solid var(--gold-dark);
+  border-radius:3px;
+  padding:9px 16px;
+  font-family:'Bebas Neue',sans-serif;
+  font-size:14px;
+  letter-spacing:0.15em;
+  color:var(--gold);
+  cursor:pointer;
+  transition:all 0.2s;
+}
+
+.btn-gen:hover { background:rgba(201,168,76,0.1); }
+
+.codes-list {
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  max-height:260px;
+  overflow-y:auto;
+}
+
+.code-row {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:8px 12px;
+  background:var(--black-4);
+  border:1px solid var(--black-5);
+  border-radius:3px;
+}
+
+.code-row.used { opacity:0.4; }
+
+.code-value {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:16px;
+  letter-spacing:0.2em;
+  color:var(--gold-light);
+  flex:1;
+}
+
+.code-row.used .code-value { color:var(--white-dim); text-decoration:line-through; }
+
+.code-status {
+  font-family:'DM Sans',sans-serif;
+  font-size:10px;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  padding:2px 8px;
+  border-radius:2px;
+}
+
+.code-status.unused { color:var(--green); border:1px solid rgba(39,174,96,0.3); background:rgba(39,174,96,0.08); }
+.code-status.used-s { color:var(--white-dim); border:1px solid var(--black-5); }
+
+.btn-copy-code {
+  background:transparent;
+  border:1px solid var(--black-5);
+  border-radius:2px;
+  width:28px;
+  height:28px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  color:var(--white-dim);
+  font-size:12px;
+  transition:all 0.2s;
+  flex-shrink:0;
+}
+
+.btn-copy-code:hover { border-color:var(--gold-dark); color:var(--gold); }
+.btn-copy-code.copied { color:var(--green); border-color:rgba(39,174,96,0.3); }
+
+.codes-empty {
+  font-family:'Crimson Pro',serif;
+  font-style:italic;
+  font-size:14px;
+  color:var(--black-5);
+  text-align:center;
+  padding:16px;
+}
+
+.btn-copy-all {
+  background:transparent;
+  border:1px solid var(--black-5);
+  border-radius:2px;
+  padding:7px 14px;
+  font-family:'DM Sans',sans-serif;
+  font-size:11px;
+  letter-spacing:0.1em;
+  color:var(--white-dim);
+  cursor:pointer;
+  transition:all 0.2s;
+  text-transform:uppercase;
+}
+
+.btn-copy-all:hover { border-color:var(--gold-dark); color:var(--gold); }
+
+.btn-clear-used {
+  background:transparent;
+  border:1px solid var(--black-5);
+  border-radius:2px;
+  padding:7px 14px;
+  font-family:'DM Sans',sans-serif;
+  font-size:11px;
+  letter-spacing:0.1em;
+  color:var(--white-dim);
+  cursor:pointer;
+  transition:all 0.2s;
+  text-transform:uppercase;
+}
+
+.btn-clear-used:hover { border-color:var(--red); color:var(--red); }
+
+/* Admin login */
+#screen-admin-login {
+  gap:24px;
+  z-index:20;
+  background:var(--black);
+}
+
+.admin-login-box {
+  width:100%;
+  max-width:320px;
+  background:var(--black-3);
+  border:1px solid var(--black-5);
+  border-radius:4px;
+  padding:28px 24px;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  text-align:center;
+}
+
+.admin-login-title {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:20px;
+  letter-spacing:0.15em;
+  color:var(--gold);
+}
+
+.admin-login-sub {
+  font-family:'Crimson Pro',serif;
+  font-style:italic;
+  font-size:14px;
+  color:var(--white-dim);
+}
+
+.admin-pass-input {
+  width:100%;
+  background:var(--black-4);
+  border:1px solid var(--black-5);
+  border-radius:3px;
+  padding:12px 16px;
+  font-family:'DM Sans',sans-serif;
+  font-size:15px;
+  color:var(--white);
+  text-align:center;
+  outline:none;
+  letter-spacing:0.15em;
+  transition:border-color 0.2s;
+}
+
+.admin-pass-input:focus { border-color:var(--gold-dark); }
+.admin-pass-input.error { border-color:var(--red); animation:shake 0.4s ease; }
+
+.btn-admin-back {
+  background:transparent;
+  border:none;
+  font-family:'DM Sans',sans-serif;
+  font-size:12px;
+  letter-spacing:0.1em;
+  color:var(--black-5);
+  cursor:pointer;
+  text-transform:uppercase;
+  transition:color 0.2s;
+}
+
+.btn-admin-back:hover { color:var(--white-dim); }
+
+/* CONFETTI CANVAS */
+#confettiCanvas {
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:50;
+  opacity:0;
+  transition:opacity 0.3s;
+}
+
+#confettiCanvas.active { opacity:1; }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width:3px; }
+::-webkit-scrollbar-track { background:var(--black); }
+::-webkit-scrollbar-thumb { background:var(--gold-dark); border-radius:2px; }
+
+/* DIVIDER */
+.divider {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin:4px 0;
+}
+
+.divider::before, .divider::after {
+  content:'';
+  flex:1;
+  height:0.5px;
+  background:var(--black-5);
+}
+
+.divider span {
+  font-family:'DM Sans',sans-serif;
+  font-size:10px;
+  letter-spacing:0.2em;
+  color:var(--black-5);
+  text-transform:uppercase;
+  white-space:nowrap;
+}
+</style>
+</head>
+<body>
+
+<canvas id="confettiCanvas"></canvas>
+
+<!-- ===================== CODE ENTRY SCREEN ===================== -->
+<div class="screen active" id="screen-code">
+  <div class="code-hero">
+    <div class="code-icon">🎟️</div>
+    <div class="logo">PUNTO84</div>
+    <div class="logo-sub">Burger & Pizza · By Ion</div>
+  </div>
+  <div class="code-hero" style="margin-top:-8px">
+    <div class="code-title">RASPADITO<span>PREMIADO</span></div>
+    <div class="code-desc">Ingresa tu código único para revelar tu premio</div>
+  </div>
+  <div class="code-form">
+    <div class="code-input-wrap">
+      <input class="code-input" id="codeInput" type="text" placeholder="P84-XXXXXX" maxlength="10" autocomplete="off" autocorrect="off" spellcheck="false">
+    </div>
+    <div class="code-error" id="codeError"></div>
+    <button class="btn-primary" id="btnValidate">VALIDAR CÓDIGO</button>
+    <div class="divider"><span>o</span></div>
+    <div class="admin-link" id="adminLink">Acceso administrador</div>
+  </div>
+</div>
+
+<!-- ===================== SCRATCH SCREEN ===================== -->
+<div class="screen" id="screen-scratch">
+  <div class="scratch-header">
+    <div class="logo" style="font-size:22px">PUNTO84</div>
+    <div class="scratch-title">¡RASPA Y GANA!</div>
+    <div class="scratch-sub">Descubre tu premio especial</div>
+  </div>
+  <div class="scratch-wrap">
+    <div class="prize-reveal" id="prizeReveal">
+      <span class="prize-emoji-big" id="prizeEmojiHidden">🎉</span>
+      <div class="prize-gold-line"></div>
+      <div class="prize-name-reveal" id="prizeNameHidden">Premio</div>
+    </div>
+    <canvas id="scratchCanvas"></canvas>
+  </div>
+  <div class="scratch-progress">
+    <div class="progress-label">
+      <span>PROGRESO</span>
+      <span id="progressPct">0%</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+  <div class="scratch-hint" id="scratchHint">👆 Desliza el dedo para raspar</div>
+</div>
+
+<!-- ===================== PRIZE SCREEN ===================== -->
+<div class="screen" id="screen-prize">
+  <div class="logo" style="font-size:22px; margin-bottom:-8px">PUNTO84</div>
+  <div class="prize-card">
+    <div class="prize-card-top">
+      <div class="prize-congrats">🏆 ¡Felicidades! — Tu Premio</div>
+      <span class="prize-emoji-display" id="prizeEmojiDisplay">🎉</span>
+      <div class="prize-name-display" id="prizeNameDisplay">Premio</div>
+    </div>
+    <div class="prize-card-bottom">
+      <div class="prize-instruction">📱 Muestra esta pantalla al momento de realizar tu pedido</div>
+      <button class="btn-whatsapp" id="btnWhatsapp">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        CANJEAR POR WHATSAPP
+      </button>
+      <button class="btn-share" id="btnShare">↑ COMPARTIR MI PREMIO</button>
+      <button class="btn-again" id="btnAgain">INGRESAR OTRO CÓDIGO</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== ADMIN LOGIN ===================== -->
+<div class="screen" id="screen-admin-login">
+  <div class="logo">PUNTO84</div>
+  <div class="admin-login-box">
+    <div class="admin-login-title">🔐 PANEL ADMIN</div>
+    <div class="admin-login-sub">Ingresa la contraseña de administrador</div>
+    <input class="admin-pass-input" id="adminPassInput" type="password" placeholder="••••••••" autocomplete="off">
+    <div class="code-error" id="adminPassError"></div>
+    <button class="btn-primary" id="btnAdminLogin">INGRESAR</button>
+    <button class="btn-admin-back" id="btnAdminBack">← Volver al inicio</button>
+  </div>
+</div>
+
+<!-- ===================== ADMIN PANEL ===================== -->
+<div class="screen" id="screen-admin">
+  <div class="admin-wrap">
+
+    <div class="admin-header">
+      <div class="admin-title">⚙️ PANEL ADMIN — PUNTO84</div>
+      <button class="btn-admin-exit" id="btnAdminExit">✕ Salir</button>
+    </div>
+
+    <!-- PRIZES -->
+    <div class="admin-section">
+      <div class="admin-section-header">
+        <div class="admin-section-title">🎁 Premios & Probabilidades</div>
+      </div>
+      <div class="admin-section-body">
+        <div id="prizeList"></div>
+        <button class="btn-add-prize" id="btnAddPrize">+ Agregar Premio</button>
+        <div class="prob-total">
+          <span class="prob-total-label">Total probabilidades</span>
+          <span class="prob-total-value" id="probTotal">0%</span>
+        </div>
+        <div class="prob-visual" id="probVisual"></div>
+        <button class="btn-save" id="btnSavePrizes">GUARDAR CAMBIOS</button>
+      </div>
+    </div>
+
+    <!-- CODE GENERATOR -->
+    <div class="admin-section">
+      <div class="admin-section-header">
+        <div class="admin-section-title">🎟️ Generar Códigos</div>
+      </div>
+      <div class="admin-section-body">
+        <div class="code-gen-row">
+          <select class="qty-select" id="codeQty">
+            <option value="1">1 código</option>
+            <option value="5">5 códigos</option>
+            <option value="10" selected>10 códigos</option>
+            <option value="25">25 códigos</option>
+            <option value="50">50 códigos</option>
+          </select>
+          <button class="btn-gen" id="btnGenCodes">⚡ GENERAR</button>
+        </div>
+        <div class="code-gen-row" style="justify-content:space-between">
+          <button class="btn-copy-all" id="btnCopyAll">📋 Copiar todos sin usar</button>
+          <button class="btn-clear-used" id="btnClearUsed">🗑️ Eliminar usados</button>
+        </div>
+        <div class="codes-list" id="codesList"></div>
+      </div>
+    </div>
+
+    <!-- CHANGE PASSWORD -->
+    <div class="admin-section">
+      <div class="admin-section-header">
+        <div class="admin-section-title">🔐 Cambiar Contraseña</div>
+      </div>
+      <div class="admin-section-body">
+        <input class="prize-name-input" id="newPassInput" type="password" placeholder="Nueva contraseña..." style="width:100%">
+        <button class="btn-save" id="btnSavePass" style="background:var(--black-4);color:var(--gold);border:1px solid var(--gold-dark)">ACTUALIZAR CONTRASEÑA</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ===================== STATE =====================
+const STORAGE_KEY = 'punto84_scratch';
+const COLORS = ['#c9a84c','#e8c97a','#8a6a1f','#f5d78e','#c0392b','#e8e8e8'];
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return getDefaultState();
+}
+
+function saveState(state) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+}
+
+function getDefaultState() {
+  return {
+    password: 'punto84admin',
+    prizes: [
+      { id:1, emoji:'🎉', name:'5% de descuento en tu próximo pedido', prob:25 },
+      { id:2, emoji:'🍔', name:'10% de descuento en tu 2do pedido', prob:20 },
+      { id:3, emoji:'🥤', name:'Bebida gratis con tu próximo pedido', prob:10 },
+      { id:4, emoji:'🍟', name:'Porción de papas gratis', prob:10 },
+      { id:5, emoji:'📸', name:'¡Comparte un post y llévate una bebida gratis!', prob:15 },
+      { id:6, emoji:'🔄', name:'¡Sigue intentando! Mejor suerte la próxima vez', prob:20 },
+    ],
+    codes: []
+  };
+}
+
+let STATE = loadState();
+
+// ===================== SCREEN NAV =====================
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById('screen-' + id);
+  if (el) {
+    el.classList.add('active');
+    el.scrollTop = 0;
+  }
+}
+
+// ===================== CODE VALIDATION =====================
+function validateCode(code) {
+  const clean = code.trim().toUpperCase();
+  const found = STATE.codes.find(c => c.code === clean);
+  if (!found) return { valid:false, msg:'Código inválido. Verifica e intenta nuevamente.' };
+  if (found.used) return { valid:false, msg:'Este código ya fue utilizado.' };
+  return { valid:true, codeObj:found };
+}
+
+function markCodeUsed(code) {
+  const found = STATE.codes.find(c => c.code === code);
+  if (found) { found.used = true; saveState(STATE); }
+}
+
+// ===================== PRIZE SELECTION =====================
+function selectPrize() {
+  const prizes = STATE.prizes.filter(p => p.prob > 0);
+  if (!prizes.length) return STATE.prizes[0];
+  const total = prizes.reduce((s,p) => s + p.prob, 0);
+  let r = Math.random() * total;
+  for (const p of prizes) {
+    r -= p.prob;
+    if (r <= 0) return p;
+  }
+  return prizes[prizes.length - 1];
+}
+
+// ===================== SCRATCH CARD =====================
+let scratchCtx, scratchPct = 0, selectedPrize = null, scratchDone = false;
+
+function initScratch(prize) {
+  selectedPrize = prize;
+  scratchDone = false;
+  scratchPct = 0;
+
+  document.getElementById('prizeEmojiHidden').textContent = prize.emoji;
+  document.getElementById('prizeNameHidden').textContent = prize.name;
+  document.getElementById('progressFill').style.width = '0%';
+  document.getElementById('progressPct').textContent = '0%';
+  document.getElementById('scratchHint').style.opacity = '1';
+
+  const canvas = document.getElementById('scratchCanvas');
+  const wrap = canvas.parentElement;
+  canvas.width = wrap.offsetWidth;
+  canvas.height = wrap.offsetHeight;
+
+  scratchCtx = canvas.getContext('2d');
+
+  // Draw scratch surface
+  scratchCtx.fillStyle = '#1a1208';
+  scratchCtx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Gold pattern overlay
+  scratchCtx.globalAlpha = 0.12;
+  for (let x = 0; x < canvas.width; x += 32) {
+    for (let y = 0; y < canvas.height; y += 32) {
+      scratchCtx.fillStyle = '#c9a84c';
+      scratchCtx.font = 'bold 12px serif';
+      scratchCtx.fillText('P84', x, y + 12);
+    }
+  }
+  scratchCtx.globalAlpha = 1;
+
+  // Scratch instruction text
+  scratchCtx.fillStyle = 'rgba(201,168,76,0.6)';
+  scratchCtx.font = 'bold 15px "DM Sans", sans-serif';
+  scratchCtx.textAlign = 'center';
+  scratchCtx.fillText('✦ RASPA AQUÍ ✦', canvas.width/2, canvas.height/2 - 8);
+  scratchCtx.font = '12px "DM Sans", sans-serif';
+  scratchCtx.fillStyle = 'rgba(201,168,76,0.4)';
+  scratchCtx.fillText('Desliza el dedo sobre la tarjeta', canvas.width/2, canvas.height/2 + 12);
+  scratchCtx.textAlign = 'left';
+
+  scratchCtx.globalCompositeOperation = 'destination-out';
+
+  // Events
+  canvas.addEventListener('mousedown', onScratchStart);
+  canvas.addEventListener('mousemove', onScratchMove);
+  canvas.addEventListener('mouseup', onScratchEnd);
+  canvas.addEventListener('touchstart', onScratchStart, {passive:true});
+  canvas.addEventListener('touchmove', onScratchMove, {passive:true});
+  canvas.addEventListener('touchend', onScratchEnd);
+}
+
+let scratching = false;
+
+function getScratchPos(e, canvas) {
+  const rect = canvas.getBoundingClientRect();
+  const src = e.touches ? e.touches[0] : e;
+  return { x: src.clientX - rect.left, y: src.clientY - rect.top };
+}
+
+function onScratchStart(e) {
+  if (scratchDone) return;
+  scratching = true;
+  const pos = getScratchPos(e, this);
+  scratchCtx.beginPath();
+  scratchCtx.arc(pos.x, pos.y, 22, 0, Math.PI * 2);
+  scratchCtx.fill();
+  updateScratchProgress();
+}
+
+function onScratchMove(e) {
+  if (!scratching || scratchDone) return;
+  const pos = getScratchPos(e, this);
+  scratchCtx.beginPath();
+  scratchCtx.arc(pos.x, pos.y, 22, 0, Math.PI * 2);
+  scratchCtx.fill();
+  updateScratchProgress();
+  if (navigator.vibrate) navigator.vibrate(1);
+}
+
+function onScratchEnd() { scratching = false; }
+
+function updateScratchProgress() {
+  const canvas = document.getElementById('scratchCanvas');
+  const imageData = scratchCtx.getImageData(0, 0, canvas.width, canvas.height);
+  let transparent = 0;
+  for (let i = 3; i < imageData.data.length; i += 4) {
+    if (imageData.data[i] < 128) transparent++;
+  }
+  const total = canvas.width * canvas.height;
+  scratchPct = Math.round((transparent / total) * 100);
+
+  document.getElementById('progressFill').style.width = scratchPct + '%';
+  document.getElementById('progressPct').textContent = scratchPct + '%';
+
+  if (scratchPct >= 60 && !scratchDone) {
+    scratchDone = true;
+    completeReveal();
+  }
+}
+
+function completeReveal() {
+  const canvas = document.getElementById('scratchCanvas');
+  scratchCtx.globalCompositeOperation = 'destination-out';
+  scratchCtx.fillRect(0, 0, canvas.width, canvas.height);
+  document.getElementById('scratchHint').textContent = '🎉 ¡Premio revelado!';
+  document.getElementById('scratchHint').style.animation = 'none';
+
+  setTimeout(() => {
+    showPrizeScreen(selectedPrize);
+  }, 800);
+}
+
+// ===================== PRIZE SCREEN =====================
+function showPrizeScreen(prize) {
+  document.getElementById('prizeEmojiDisplay').textContent = prize.emoji;
+  document.getElementById('prizeNameDisplay').textContent = prize.name;
+
+  const waMsg = encodeURIComponent(`Hola! Gané "${prize.name}" con mi raspadito Punto84 🎉`);
+  document.getElementById('btnWhatsapp').onclick = () => {
+    window.open(`https://wa.me/56938902407?text=${waMsg}`, '_blank');
+  };
+
+  document.getElementById('btnShare').onclick = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: 'Gané en el Raspadito Punto84!',
+        text: `Gané "${prize.name}" en el raspadito de Punto84 Burger & Pizza! 🎉🍔`,
+        url: window.location.href
+      }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(`Gané "${prize.name}" en el raspadito de Punto84! 🎉`).then(() => {
+        document.getElementById('btnShare').textContent = '✓ COPIADO AL PORTAPAPELES';
+      });
+    }
+  };
+
+  showScreen('prize');
+  launchConfetti();
+  if (navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 200]);
+}
+
+// ===================== CONFETTI =====================
+function launchConfetti() {
+  const canvas = document.getElementById('confettiCanvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  canvas.classList.add('active');
+
+  const particles = Array.from({length:80}, () => ({
+    x: Math.random() * canvas.width,
+    y: -10,
+    vx: (Math.random()-0.5)*4,
+    vy: Math.random()*4+2,
+    r: Math.random()*6+3,
+    color: COLORS[Math.floor(Math.random()*COLORS.length)],
+    rot: Math.random()*360,
+    rotv: (Math.random()-0.5)*8,
+    alpha:1
+  }));
+
+  let frame = 0;
+  function animate() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    particles.forEach(p => {
+      p.x += p.vx; p.y += p.vy; p.rot += p.rotv; p.alpha -= 0.008;
+      if (p.alpha <= 0) return;
+      ctx.save();
+      ctx.globalAlpha = p.alpha;
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot * Math.PI/180);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.r/2, -p.r/2, p.r, p.r);
+      ctx.restore();
+    });
+    frame++;
+    if (frame < 180) requestAnimationFrame(animate);
+    else { canvas.classList.remove('active'); ctx.clearRect(0,0,canvas.width,canvas.height); }
+  }
+  animate();
+}
+
+// ===================== CODE GENERATION =====================
+function generateCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code = 'P84-';
+  for (let i=0; i<6; i++) code += chars[Math.floor(Math.random()*chars.length)];
+  return code;
+}
+
+function generateCodes(qty) {
+  for (let i=0; i<qty; i++) {
+    let code;
+    do { code = generateCode(); } while (STATE.codes.find(c=>c.code===code));
+    STATE.codes.push({ code, used:false, createdAt: Date.now() });
+  }
+  saveState(STATE);
+  renderCodes();
+}
+
+// ===================== ADMIN UI =====================
+function renderPrizes() {
+  const list = document.getElementById('prizeList');
+  list.innerHTML = '';
+  STATE.prizes.forEach((p,i) => {
+    const row = document.createElement('div');
+    row.className = 'prize-item';
+    row.innerHTML = `
+      <input class="prize-emoji-input" value="${p.emoji}" maxlength="2" data-idx="${i}" data-field="emoji">
+      <input class="prize-name-input" value="${p.name}" data-idx="${i}" data-field="name" placeholder="Nombre del premio...">
+      <div class="prize-prob-wrap">
+        <input class="prize-prob-input" type="number" min="0" max="100" value="${p.prob}" data-idx="${i}" data-field="prob">
+        <span class="prize-prob-label">%</span>
+      </div>
+      <button class="btn-delete" data-idx="${i}">✕</button>
+    `;
+    list.appendChild(row);
+  });
+
+  list.querySelectorAll('input').forEach(inp => {
+    inp.addEventListener('input', () => {
+      const idx = +inp.dataset.idx;
+      const field = inp.dataset.field;
+      if (field === 'prob') STATE.prizes[idx].prob = Math.max(0, Math.min(100, +inp.value||0));
+      else STATE.prizes[idx][field] = inp.value;
+      updateProbTotal();
+    });
+  });
+
+  list.querySelectorAll('.btn-delete').forEach(btn => {
+    btn.addEventListener('click', () => {
+      STATE.prizes.splice(+btn.dataset.idx, 1);
+      renderPrizes();
+    });
+  });
+
+  updateProbTotal();
+}
+
+function updateProbTotal() {
+  const total = STATE.prizes.reduce((s,p) => s + (p.prob||0), 0);
+  const el = document.getElementById('probTotal');
+  el.textContent = total + '%';
+  el.className = 'prob-total-value ' + (total === 100 ? 'ok' : 'bad');
+
+  // Visual bar
+  const visual = document.getElementById('probVisual');
+  visual.innerHTML = '';
+  STATE.prizes.forEach((p,i) => {
+    if (!p.prob) return;
+    const seg = document.createElement('div');
+    seg.className = 'prob-segment';
+    seg.style.width = p.prob + '%';
+    seg.style.background = COLORS[i % COLORS.length];
+    seg.style.opacity = '0.7';
+    seg.title = `${p.emoji} ${p.name}: ${p.prob}%`;
+    visual.appendChild(seg);
+  });
+}
+
+function renderCodes() {
+  const list = document.getElementById('codesList');
+  if (!STATE.codes.length) {
+    list.innerHTML = '<div class="codes-empty">No hay códigos generados aún</div>';
+    return;
+  }
+  list.innerHTML = '';
+  [...STATE.codes].reverse().forEach(c => {
+    const row = document.createElement('div');
+    row.className = 'code-row ' + (c.used ? 'used' : '');
+    row.innerHTML = `
+      <span class="code-value">${c.code}</span>
+      <span class="code-status ${c.used ? 'used-s' : 'unused'}">${c.used ? 'USADO' : 'NUEVO'}</span>
+      <button class="btn-copy-code" data-code="${c.code}" title="Copiar">📋</button>
+    `;
+    list.appendChild(row);
+  });
+
+  list.querySelectorAll('.btn-copy-code').forEach(btn => {
+    btn.addEventListener('click', () => {
+      navigator.clipboard.writeText(btn.dataset.code).then(() => {
+        btn.textContent = '✓';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = '📋'; btn.classList.remove('copied'); }, 1500);
+      }).catch(() => {
+        btn.textContent = '✓';
+        setTimeout(() => { btn.textContent = '📋'; }, 1500);
+      });
+    });
+  });
+}
+
+// ===================== EVENT LISTENERS =====================
+// Validate code
+document.getElementById('btnValidate').addEventListener('click', () => {
+  const val = document.getElementById('codeInput').value;
+  const result = validateCode(val);
+  const input = document.getElementById('codeInput');
+  const errEl = document.getElementById('codeError');
+
+  if (!result.valid) {
+    input.classList.add('error');
+    errEl.textContent = result.msg;
+    setTimeout(() => input.classList.remove('error'), 500);
+    if (navigator.vibrate) navigator.vibrate([80,40,80]);
+    return;
+  }
+
+  errEl.textContent = '';
+  markCodeUsed(result.codeObj.code);
+  const prize = selectPrize();
+  showScreen('scratch');
+  setTimeout(() => initScratch(prize), 300);
+});
+
+document.getElementById('codeInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('btnValidate').click();
+});
+
+document.getElementById('codeInput').addEventListener('input', function() {
+  this.value = this.value.toUpperCase();
+  document.getElementById('codeError').textContent = '';
+  this.classList.remove('error');
+});
+
+// Again
+document.getElementById('btnAgain').addEventListener('click', () => {
+  document.getElementById('codeInput').value = '';
+  document.getElementById('codeError').textContent = '';
+  showScreen('code');
+});
+
+// Admin link
+document.getElementById('adminLink').addEventListener('click', () => showScreen('admin-login'));
+
+// Admin login
+document.getElementById('btnAdminLogin').addEventListener('click', () => {
+  const pass = document.getElementById('adminPassInput').value;
+  if (pass === STATE.password) {
+    document.getElementById('adminPassInput').value = '';
+    renderPrizes();
+    renderCodes();
+    showScreen('admin');
+  } else {
+    const inp = document.getElementById('adminPassInput');
+    inp.classList.add('error');
+    document.getElementById('adminPassError').textContent = 'Contraseña incorrecta';
+    setTimeout(() => { inp.classList.remove('error'); document.getElementById('adminPassError').textContent=''; }, 2000);
+    if (navigator.vibrate) navigator.vibrate([80,40,80]);
+  }
+});
+
+document.getElementById('adminPassInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('btnAdminLogin').click();
+});
+
+document.getElementById('btnAdminBack').addEventListener('click', () => {
+  document.getElementById('adminPassInput').value = '';
+  document.getElementById('adminPassError').textContent = '';
+  showScreen('code');
+});
+
+document.getElementById('btnAdminExit').addEventListener('click', () => showScreen('code'));
+
+// Add prize
+document.getElementById('btnAddPrize').addEventListener('click', () => {
+  STATE.prizes.push({ id:Date.now(), emoji:'🎁', name:'Nuevo premio', prob:0 });
+  renderPrizes();
+});
+
+// Save prizes
+document.getElementById('btnSavePrizes').addEventListener('click', () => {
+  const total = STATE.prizes.reduce((s,p) => s+(p.prob||0),0);
+  if (total !== 100) {
+    alert(`Las probabilidades deben sumar exactamente 100%. Actualmente suman ${total}%.`);
+    return;
+  }
+  saveState(STATE);
+  const btn = document.getElementById('btnSavePrizes');
+  btn.textContent = '✓ GUARDADO';
+  btn.classList.add('saved');
+  setTimeout(() => { btn.textContent = 'GUARDAR CAMBIOS'; btn.classList.remove('saved'); }, 2000);
+});
+
+// Gen codes
+document.getElementById('btnGenCodes').addEventListener('click', () => {
+  const qty = +document.getElementById('codeQty').value;
+  generateCodes(qty);
+});
+
+// Copy all unused
+document.getElementById('btnCopyAll').addEventListener('click', () => {
+  const unused = STATE.codes.filter(c=>!c.used).map(c=>c.code).join('\n');
+  if (!unused) { alert('No hay códigos sin usar.'); return; }
+  navigator.clipboard.writeText(unused).then(() => {
+    const btn = document.getElementById('btnCopyAll');
+    btn.textContent = '✓ COPIADOS';
+    setTimeout(() => { btn.textContent = '📋 Copiar todos sin usar'; }, 2000);
+  });
+});
+
+// Clear used
+document.getElementById('btnClearUsed').addEventListener('click', () => {
+  if (!confirm('¿Eliminar todos los códigos ya usados?')) return;
+  STATE.codes = STATE.codes.filter(c=>!c.used);
+  saveState(STATE);
+  renderCodes();
+});
+
+// Save password
+document.getElementById('btnSavePass').addEventListener('click', () => {
+  const newPass = document.getElementById('newPassInput').value.trim();
+  if (!newPass || newPass.length < 4) { alert('La contraseña debe tener al menos 4 caracteres.'); return; }
+  STATE.password = newPass;
+  saveState(STATE);
+  document.getElementById('newPassInput').value = '';
+  const btn = document.getElementById('btnSavePass');
+  btn.textContent = '✓ CONTRASEÑA ACTUALIZADA';
+  setTimeout(() => { btn.textContent = 'ACTUALIZAR CONTRASEÑA'; }, 2000);
+});
+
+// Check URL param for direct admin access
+if (window.location.search.includes('admin=true')) showScreen('admin-login');
+</script>
+</body>
+</html>
