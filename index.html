@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Punto84 — Raspadito Premium</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold: #c9a84c;
+  --gold-light: #e8c97a;
+  --gold-dark: #8a6a1f;
+  --gold-glow: rgba(201,168,76,0.25);
+  --black: #080808;
+  --black-2: #0f0f0f;
+  --black-3: #161616;
+  --black-4: #1e1e1e;
+  --black-5: #2a2a2a;
+  --white: #f5f0e8;
+  --white-dim: #a89880;
+  --red: #c0392b;
+  --green: #27ae60;
+}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html, body { height:100%; background:var(--black); color:var(--white); font-family:'DM Sans',sans-serif; overflow:hidden; user-select:none; }
+body::before { content:''; position:fixed; inset:0; background: radial-gradient(ellipse at 20% 20%, rgba(201,168,76,0.04) 0%, transparent 60%), radial-gradient(ellipse at 80% 80%, rgba(201,168,76,0.03) 0%, transparent 60%); pointer-events:none; z-index:0; }
+body::after { content:''; position:fixed; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg, transparent, var(--gold), var(--gold-light), var(--gold), transparent); z-index:999; }
+
+.screen { position:fixed; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; opacity:0; pointer-events:none; transition:opacity 0.4s ease, transform 0.4s ease; transform:translateY(20px); overflow-y:auto; z-index:10; }
+.screen.active { opacity:1; pointer-events:all; transform:translateY(0); }
+
+.logo { font-family:'Bebas Neue',sans-serif; font-size:clamp(26px,6vw,40px); letter-spacing:0.12em; color:var(--gold); line-height:1; text-align:center; }
+.logo-sub { font-family:'Crimson Pro',serif; font-style:italic; font-size:13px; color:var(--white-dim); letter-spacing:0.1em; margin-top:2px; text-align:center; }
+
+/* CODE SCREEN */
+#screen-code { gap:28px; background:var(--black); }
+.code-icon { width:68px; height:68px; border:1.5px solid var(--gold-dark); border-radius:4px; display:flex; align-items:center; justify-content:center; margin:0 auto 16px; font-size:30px; background:linear-gradient(135deg, var(--black-3), var(--black-4)); }
+.code-title { font-family:'Bebas Neue',sans-serif; font-size:clamp(30px,8vw,50px); letter-spacing:0.06em; line-height:0.95; margin-bottom:8px; text-align:center; }
+.code-title span { color:var(--gold); display:block; }
+.code-desc { font-family:'Crimson Pro',serif; font-style:italic; font-size:15px; color:var(--white-dim); max-width:280px; margin:0 auto; line-height:1.6; text-align:center; }
+.code-form { width:100%; max-width:340px; display:flex; flex-direction:column; gap:10px; }
+.code-input { width:100%; background:var(--black-3); border:1px solid var(--black-5); border-radius:3px; padding:14px 20px; font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:0.25em; color:var(--white); text-align:center; text-transform:uppercase; outline:none; transition:border-color 0.2s, box-shadow 0.2s; }
+.code-input:focus { border-color:var(--gold-dark); box-shadow:0 0 0 3px var(--gold-glow); }
+.code-input::placeholder { color:var(--black-5); letter-spacing:0.15em; font-size:18px; }
+.code-input.error { border-color:var(--red); animation:shake 0.4s ease; }
+@keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)} 40%{transform:translateX(8px)} 60%{transform:translateX(-5px)} 80%{transform:translateX(5px)} }
+.code-error { font-family:'DM Sans',sans-serif; font-size:12px; color:var(--red); text-align:center; min-height:16px; letter-spacing:0.05em; }
+.btn-primary { width:100%; background:var(--gold); border:none; border-radius:3px; padding:14px 24px; font-family:'Bebas Neue',sans-serif; font-size:18px; letter-spacing:0.2em; color:var(--black); cursor:pointer; transition:all 0.2s; }
+.btn-primary:hover { background:var(--gold-light); transform:translateY(-1px); }
+.btn-primary:active { transform:scale(0.98); }
+.btn-primary:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
+.admin-link { font-family:'DM Sans',sans-serif; font-size:11px; color:var(--black-5); text-align:center; cursor:pointer; letter-spacing:0.1em; transition:color 0.2s; margin-top:4px; }
+.admin-link:hover { color:var(--white-dim); }
+.divider { display:flex; align-items:center; gap:12px; }
+.divider::before, .divider::after { content:''; flex:1; height:0.5px; background:var(--black-5); }
+.divider span { font-family:'DM Sans',sans-serif; font-size:10px; letter-spacing:0.2em; color:var(--black-5); text-transform:uppercase; }
+
+/* SCRATCH SCREEN */
+#screen-scratch { gap:18px; }
+.scratch-title { font-family:'Bebas Neue',sans-serif; font-size:clamp(22px,5vw,34px); letter-spacing:0.08em; color:var(--white); line-height:1; margin-bottom:2px; text-align:center; }
+.scratch-sub { font-family:'Crimson Pro',serif; font-style:italic; font-size:14px; color:var(--gold); text-align:center; }
+.scratch-wrap { position:relative; width:min(320px,88vw); height:min(200px,55vw); border-radius:8px; overflow:hidden; box-shadow:0 0 40px rgba(201,168,76,0.15), 0 0 0 1px var(--gold-dark); flex-shrink:0; }
+.prize-reveal { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; background:radial-gradient(ellipse at center, #1a1208 0%, #0a0a0a 100%); gap:6px; padding:20px; }
+.prize-emoji-big { font-size:40px; line-height:1; filter:drop-shadow(0 0 12px var(--gold-glow)); }
+.prize-name-reveal { font-family:'Bebas Neue',sans-serif; font-size:clamp(13px,3.5vw,18px); letter-spacing:0.06em; color:var(--gold-light); text-align:center; line-height:1.2; }
+.prize-gold-line { width:36px; height:1px; background:var(--gold); }
+#scratchCanvas { position:absolute; inset:0; cursor:crosshair; touch-action:none; }
+.scratch-progress { width:min(320px,88vw); display:flex; flex-direction:column; gap:5px; }
+.progress-label { font-family:'DM Sans',sans-serif; font-size:10px; letter-spacing:0.15em; color:var(--white-dim); text-transform:uppercase; display:flex; justify-content:space-between; }
+.progress-bar { height:3px; background:var(--black-4); border-radius:2px; overflow:hidden; }
+.progress-fill { height:100%; background:linear-gradient(90deg, var(--gold-dark), var(--gold-light)); border-radius:2px; width:0%; transition:width 0.2s ease; }
+.scratch-hint { font-family:'Crimson Pro',serif; font-style:italic; font-size:14px; color:var(--white-dim); text-align:center; animation:pulse-hint 2s ease infinite; }
+@keyframes pulse-hint { 0%,100%{opacity:0.6} 50%{opacity:1} }
+
+/* PRIZE SCREEN */
+#screen-prize { gap:20px; }
+.prize-card { width:100%; max-width:340px; background:var(--black-3); border:1px solid var(--gold-dark); border-radius:6px; overflow:hidden; }
+.prize-card-top { background:linear-gradient(135deg, #1a1208, #0f0d06); padding:24px 20px; text-align:center; border-bottom:1px solid var(--gold-dark); }
+.prize-congrats { font-family:'Bebas Neue',sans-serif; font-size:10px; letter-spacing:0.35em; color:var(--gold-dark); margin-bottom:10px; }
+.prize-emoji-display { font-size:48px; line-height:1; margin-bottom:10px; display:block; filter:drop-shadow(0 0 16px var(--gold-glow)); animation:float 3s ease infinite; }
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+.prize-name-display { font-family:'Bebas Neue',sans-serif; font-size:clamp(16px,4.5vw,24px); letter-spacing:0.06em; color:var(--gold-light); line-height:1.2; }
+.prize-card-bottom { padding:14px 18px; display:flex; flex-direction:column; gap:8px; }
+.prize-instruction { font-family:'Crimson Pro',serif; font-style:italic; font-size:13px; color:var(--white-dim); text-align:center; line-height:1.5; padding:10px; background:var(--black-4); border-radius:3px; border-left:2px solid var(--gold); }
+.btn-whatsapp { width:100%; background:#25d366; border:none; border-radius:3px; padding:12px 24px; font-family:'Bebas Neue',sans-serif; font-size:15px; letter-spacing:0.15em; color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; transition:all 0.2s; }
+.btn-whatsapp:hover { background:#20bd5a; }
+.btn-share { width:100%; background:transparent; border:1px solid var(--gold-dark); border-radius:3px; padding:10px 24px; font-family:'Bebas Neue',sans-serif; font-size:13px; letter-spacing:0.15em; color:var(--gold); cursor:pointer; transition:all 0.2s; }
+.btn-share:hover { background:rgba(201,168,76,0.08); }
+.btn-again { width:100%; background:transparent; border:none; padding:6px; font-family:'DM Sans',sans-serif; font-size:11px; letter-spacing:0.1em; color:var(--black-5); cursor:pointer; transition:color 0.2s; text-transform:uppercase; }
+.btn-again:hover { color:var(--white-dim); }
+
+/* ADMIN LOGIN */
+#screen-admin-login { gap:24px; background:var(--black); z-index:20; }
+.admin-login-box { width:100%; max-width:320px; background:var(--black-3); border:1px solid var(--black-5); border-radius:4px; padding:28px 24px; display:flex; flex-direction:column; gap:14px; text-align:center; }
+.admin-login-title { font-family:'Bebas Neue',sans-serif; font-size:20px; letter-spacing:0.15em; color:var(--gold); }
+.admin-login-sub { font-family:'Crimson Pro',serif; font-style:italic; font-size:14px; color:var(--white-dim); }
+.admin-pass-input { width:100%; background:var(--black-4); border:1px solid var(--black-5); border-radius:3px; padding:12px 16px; font-family:'DM Sans',sans-serif; font-size:15px; color:var(--white); text-align:center; outline:none; letter-spacing:0.15em; transition:border-color 0.2s; }
+.admin-pass-input:focus { border-color:var(--gold-dark); }
+.admin-pass-input.error { border-color:var(--red); animation:shake 0.4s ease; }
+.btn-admin-back { background:transparent; border:none; font-family:'DM Sans',sans-serif; font-size:12px; letter-spacing:0.1em; color:var(--black-5); cursor:pointer; text-transform:uppercase; transition:color 0.2s; }
+.btn-admin-back:hover { color:var(--white-dim); }
+
+/* ADMIN PANEL */
+#screen-admin { justify-content:flex-start; padding:16px; overflow-y:auto; z-index:20; background:var(--black); gap:0; }
+.admin-wrap { width:100%; max-width:600px; margin:0 auto; display:flex; flex-direction:column; gap:16px; padding-bottom:40px; }
+.admin-header { display:flex; align-items:center; justify-content:space-between; padding:16px 0 12px; border-bottom:1px solid var(--black-5); }
+.admin-title { font-family:'Bebas Neue',sans-serif; font-size:20px; letter-spacing:0.1em; color:var(--gold); }
+.btn-admin-exit { background:transparent; border:1px solid var(--black-5); border-radius:2px; padding:6px 12px; font-family:'DM Sans',sans-serif; font-size:11px; letter-spacing:0.1em; color:var(--white-dim); cursor:pointer; transition:all 0.2s; text-transform:uppercase; }
+.btn-admin-exit:hover { border-color:var(--red); color:var(--red); }
+.admin-section { background:var(--black-2); border:1px solid var(--black-5); border-radius:4px; overflow:hidden; }
+.admin-section-header { background:var(--black-3); padding:10px 16px; border-bottom:1px solid var(--black-5); display:flex; align-items:center; justify-content:space-between; }
+.admin-section-title { font-family:'Bebas Neue',sans-serif; font-size:13px; letter-spacing:0.15em; color:var(--gold); text-transform:uppercase; }
+.admin-section-body { padding:14px; display:flex; flex-direction:column; gap:10px; }
+.prize-item { background:var(--black-3); border:1px solid var(--black-5); border-radius:3px; padding:10px 12px; display:flex; align-items:center; gap:10px; }
+.prize-emoji-input { width:44px; background:var(--black-4); border:1px solid var(--black-5); border-radius:3px; padding:7px; font-size:18px; text-align:center; color:var(--white); outline:none; }
+.prize-name-input { flex:1; background:var(--black-4); border:1px solid var(--black-5); border-radius:3px; padding:8px 10px; font-family:'DM Sans',sans-serif; font-size:13px; color:var(--white); outline:none; transition:border-color 0.2s; }
+.prize-name-input:focus { border-color:var(--gold-dark); }
+.prize-prob-wrap { display:flex; flex-direction:column; align-items:center; gap:2px; min-width:48px; }
+.prize-prob-input { width:48px; background:var(--black-4); border:1px solid var(--black-5); border-radius:3px; padding:6px; font-family:'Bebas Neue',sans-serif; font-size:15px; letter-spacing:0.05em; color:var(--gold); text-align:center; outline:none; }
+.prize-prob-label { font-family:'DM Sans',sans-serif; font-size:9px; color:var(--white-dim); letter-spacing:0.1em; text-transform:uppercase; }
+.btn-delete { background:transparent; border:1px solid var(--black-5); border-radius:2px; width:26px; height:26px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--white-dim); font-size:12px; transition:all 0.2s; flex-shrink:0; }
+.btn-delete:hover { border-color:var(--red); color:var(--red); }
+.prob-total { display:flex; align-items:center; justify-content:space-between; padding:8px 12px; background:var(--black-4); border-radius:3px; border:1px solid var(--black-5); }
+.prob-total-label { font-family:'DM Sans',sans-serif; font-size:11px; letter-spacing:0.08em; color:var(--white-dim); text-transform:uppercase; }
+.prob-total-value { font-family:'Bebas Neue',sans-serif; font-size:17px; letter-spacing:0.1em; transition:color 0.2s; }
+.prob-total-value.ok { color:var(--green); }
+.prob-total-value.bad { color:var(--red); }
+.prob-visual { height:5px; background:var(--black-4); border-radius:3px; overflow:hidden; display:flex; gap:1px; }
+.prob-segment { height:100%; border-radius:1px; transition:width 0.3s ease; }
+.btn-add-prize { background:transparent; border:1px dashed var(--black-5); border-radius:3px; padding:9px; font-family:'DM Sans',sans-serif; font-size:11px; letter-spacing:0.12em; color:var(--white-dim); cursor:pointer; text-align:center; text-transform:uppercase; transition:all 0.2s; width:100%; }
+.btn-add-prize:hover { border-color:var(--gold-dark); color:var(--gold); }
+.btn-save { width:100%; background:var(--gold); border:none; border-radius:3px; padding:11px; font-family:'Bebas Neue',sans-serif; font-size:15px; letter-spacing:0.2em; color:var(--black); cursor:pointer; transition:all 0.2s; }
+.btn-save:hover { background:var(--gold-light); }
+.btn-save.saved { background:var(--green); color:#fff; }
+.code-gen-row { display:flex; gap:8px; align-items:center; }
+.qty-select { background:var(--black-4); border:1px solid var(--black-5); border-radius:3px; padding:8px 10px; font-family:'DM Sans',sans-serif; font-size:13px; color:var(--white); outline:none; cursor:pointer; }
+.btn-gen { flex:1; background:var(--black-4); border:1px solid var(--gold-dark); border-radius:3px; padding:8px 14px; font-family:'Bebas Neue',sans-serif; font-size:13px; letter-spacing:0.15em; color:var(--gold); cursor:pointer; transition:all 0.2s; }
+.btn-gen:hover { background:rgba(201,168,76,0.1); }
+.btn-gen:disabled { opacity:0.5; cursor:not-allowed; }
+.codes-list { display:flex; flex-direction:column; gap:5px; max-height:240px; overflow-y:auto; }
+.code-row { display:flex; flex-direction:column; gap:4px; padding:7px 10px; background:var(--black-4); border:1px solid var(--black-5); border-radius:3px; }
+.code-row.used { opacity:0.75; }
+.code-row-main { display:flex; align-items:center; gap:8px; }
+.code-prize { font-family:'Crimson Pro',serif; font-style:italic; font-size:12px; color:var(--gold); padding:3px 8px; background:rgba(201,168,76,0.06); border:0.5px solid var(--gold-dark); border-radius:2px; display:inline-block; }
+.code-value { font-family:'Bebas Neue',sans-serif; font-size:15px; letter-spacing:0.2em; color:var(--gold-light); flex:1; }
+.code-row.used .code-value { color:var(--white-dim); text-decoration:line-through; }
+.code-status { font-family:'DM Sans',sans-serif; font-size:9px; letter-spacing:0.1em; text-transform:uppercase; padding:2px 7px; border-radius:2px; }
+.code-status.unused { color:var(--green); border:1px solid rgba(39,174,96,0.3); background:rgba(39,174,96,0.08); }
+.code-status.used-s { color:var(--white-dim); border:1px solid var(--black-5); }
+.btn-copy-code { background:transparent; border:1px solid var(--black-5); border-radius:2px; width:26px; height:26px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--white-dim); font-size:11px; transition:all 0.2s; flex-shrink:0; }
+.btn-copy-code:hover { border-color:var(--gold-dark); color:var(--gold); }
+.btn-copy-code.copied { color:var(--green); border-color:rgba(39,174,96,0.3); }
+.codes-empty { font-family:'Crimson Pro',serif; font-style:italic; font-size:13px; color:var(--black-5); text-align:center; padding:14px; }
+.btn-copy-all { background:transparent; border:1px solid var(--black-5); border-radius:2px; padding:6px 12px; font-family:'DM Sans',sans-serif; font-size:10px; letter-spacing:0.1em; color:var(--white-dim); cursor:pointer; transition:all 0.2s; text-transform:uppercase; }
+.btn-copy-all:hover { border-color:var(--gold-dark); color:var(--gold); }
+.btn-clear-used { background:transparent; border:1px solid var(--black-5); border-radius:2px; padding:6px 12px; font-family:'DM Sans',sans-serif; font-size:10px; letter-spacing:0.1em; color:var(--white-dim); cursor:pointer; transition:all 0.2s; text-transform:uppercase; }
+.btn-clear-used:hover { border-color:var(--red); color:var(--red); }
+.status-msg { font-family:'DM Sans',sans-serif; font-size:11px; color:var(--white-dim); text-align:center; padding:6px; min-height:20px; }
+.status-msg.ok { color:var(--green); }
+.status-msg.err { color:var(--red); }
+
+#confettiCanvas { position:fixed; inset:0; pointer-events:none; z-index:50; opacity:0; transition:opacity 0.3s; }
+#confettiCanvas.active { opacity:1; }
+::-webkit-scrollbar { width:3px; }
+::-webkit-scrollbar-track { background:var(--black); }
+::-webkit-scrollbar-thumb { background:var(--gold-dark); border-radius:2px; }
+</style>
+</head>
+<body>
+
+<canvas id="confettiCanvas"></canvas>
+
+<!-- CODE SCREEN -->
+<div class="screen active" id="screen-code">
+  <div style="text-align:center">
+    <div class="code-icon">🎟️</div>
+    <div class="logo">PUNTO84</div>
+    <div class="logo-sub">Burger & Pizza · By Ion</div>
+  </div>
+  <div style="text-align:center">
+    <div class="code-title">RASPADITO<span>PREMIADO</span></div>
+    <div class="code-desc">Ingresa tu código único para revelar tu premio</div>
+  </div>
+  <div class="code-form">
+    <input class="code-input" id="codeInput" type="text" placeholder="P84-XXXXXX" maxlength="10" autocomplete="off" autocorrect="off" spellcheck="false">
+    <div class="code-error" id="codeError"></div>
+    <button class="btn-primary" id="btnValidate">VALIDAR CÓDIGO</button>
+    <div class="divider"><span>o</span></div>
+    <div class="admin-link" id="adminLink">Acceso administrador</div>
+  </div>
+</div>
+
+<!-- SCRATCH SCREEN -->
+<div class="screen" id="screen-scratch">
+  <div style="text-align:center">
+    <div class="logo" style="font-size:20px">PUNTO84</div>
+    <div class="scratch-title">¡RASPA Y GANA!</div>
+    <div class="scratch-sub">Descubre tu premio especial</div>
+  </div>
+  <div class="scratch-wrap">
+    <div class="prize-reveal" id="prizeReveal">
+      <span class="prize-emoji-big" id="prizeEmojiHidden">🎉</span>
+      <div class="prize-gold-line"></div>
+      <div class="prize-name-reveal" id="prizeNameHidden">Premio</div>
+    </div>
+    <canvas id="scratchCanvas"></canvas>
+  </div>
+  <div class="scratch-progress">
+    <div class="progress-label"><span>PROGRESO</span><span id="progressPct">0%</span></div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+  <div class="scratch-hint" id="scratchHint">👆 Desliza el dedo para raspar</div>
+</div>
+
+<!-- PRIZE SCREEN -->
+<div class="screen" id="screen-prize">
+  <div class="logo" style="font-size:20px; margin-bottom:-4px">PUNTO84</div>
+  <div class="prize-card">
+    <div class="prize-card-top">
+      <div class="prize-congrats">🏆 ¡FELICIDADES! — TU PREMIO</div>
+      <span class="prize-emoji-display" id="prizeEmojiDisplay">🎉</span>
+      <div class="prize-name-display" id="prizeNameDisplay">Premio</div>
+    </div>
+    <div class="prize-card-bottom">
+      <div class="prize-instruction">📱 Muestra esta pantalla al momento de realizar tu pedido</div>
+      <button class="btn-whatsapp" id="btnWhatsapp">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        CANJEAR POR WHATSAPP
+      </button>
+      <button class="btn-share" id="btnShare">↑ COMPARTIR MI PREMIO</button>
+      <button class="btn-again" id="btnAgain">INGRESAR OTRO CÓDIGO</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN LOGIN -->
+<div class="screen" id="screen-admin-login" style="z-index:20; background:var(--black)">
+  <div class="logo">PUNTO84</div>
+  <div class="admin-login-box">
+    <div class="admin-login-title">🔐 PANEL ADMIN</div>
+    <div class="admin-login-sub">Ingresa la contraseña de administrador</div>
+    <input class="admin-pass-input" id="adminPassInput" type="password" placeholder="••••••••" autocomplete="off">
+    <div class="code-error" id="adminPassError"></div>
+    <button class="btn-primary" id="btnAdminLogin">INGRESAR</button>
+    <button class="btn-admin-back" id="btnAdminBack">← Volver al inicio</button>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div class="screen" id="screen-admin" style="z-index:20; background:var(--black)">
+  <div class="admin-wrap">
+    <div class="admin-header">
+      <div class="admin-title">⚙️ PANEL ADMIN</div>
+      <button class="btn-admin-exit" id="btnAdminExit">✕ Salir</button>
+    </div>
+
+    <div class="status-msg" id="adminStatus"></div>
+
+    <!-- PRIZES -->
+    <div class="admin-section">
+      <div class="admin-section-header">
+        <div class="admin-section-title">🎁 Premios & Probabilidades</div>
+      </div>
+      <div class="admin-section-body">
+        <div id="prizeList"></div>
+        <button class="btn-add-prize" id="btnAddPrize">+ Agregar Premio</button>
+        <div class="prob-total">
+          <span class="prob-total-label">Total probabilidades</span>
+          <span class="prob-total-value" id="probTotal">0%</span>
+        </div>
+        <div class="prob-visual" id="probVisual"></div>
+        <button class="btn-save" id="btnSavePrizes">GUARDAR PREMIOS</button>
+      </div>
+    </div>
+
+    <!-- CODES -->
+    <div class="admin-section">
+      <div class="admin-section-header">
+        <div class="admin-section-title">🎟️ Generar Códigos</div>
+      </div>
+      <div class="admin-section-body">
+        <div class="code-gen-row">
+          <select class="qty-select" id="codeQty">
+            <option value="1">1 código</option>
+            <option value="5">5 códigos</option>
+            <option value="10" selected>10 códigos</option>
+            <option value="25">25 códigos</option>
+            <option value="50">50 códigos</option>
+          </select>
+          <button class="btn-gen" id="btnGenCodes">⚡ GENERAR</button>
+        </div>
+        <div class="code-gen-row" style="justify-content:space-between">
+          <button class="btn-copy-all" id="btnCopyAll">📋 Copiar sin usar</button>
+          <button class="btn-clear-used" id="btnClearUsed">🗑️ Eliminar usados</button>
+        </div>
+        <div class="codes-list" id="codesList"></div>
+      </div>
+    </div>
+
+    <!-- PASSWORD -->
+    <div class="admin-section">
+      <div class="admin-section-header">
+        <div class="admin-section-title">🔐 Cambiar Contraseña</div>
+      </div>
+      <div class="admin-section-body">
+        <input class="prize-name-input" id="newPassInput" type="password" placeholder="Nueva contraseña..." style="width:100%">
+        <button class="btn-save" id="btnSavePass" style="background:var(--black-4);color:var(--gold);border:1px solid var(--gold-dark)">ACTUALIZAR CONTRASEÑA</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, set, get, update, remove, push, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyARPjPpiqLN_QwFfQjEJHo36-EQdeQOwfM",
+  authDomain: "punto84-raspadito.firebaseapp.com",
+  databaseURL: "https://punto84-raspadito-default-rtdb.firebaseio.com",
+  projectId: "punto84-raspadito",
+  storageBucket: "punto84-raspadito.firebasestorage.app",
+  messagingSenderId: "201750862105",
+  appId: "1:201750862105:web:68b74ee7a2a9ee43088d88"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+const COLORS = ['#c9a84c','#e8c97a','#8a6a1f','#f5d78e','#c0392b','#e8e8e8'];
+let currentPrizes = [];
+let currentCodes = {};
+let selectedPrize = null;
+let scratchDone = false;
+let scratching = false;
+let scratchCtx = null;
+
+// DEFAULT PRIZES
+const DEFAULT_PRIZES = [
+  { emoji:'🎉', name:'5% de descuento en tu próximo pedido', prob:25 },
+  { emoji:'🍔', name:'10% de descuento en tu 2do pedido', prob:20 },
+  { emoji:'🥤', name:'Bebida gratis con tu próximo pedido', prob:10 },
+  { emoji:'🍟', name:'Porción de papas gratis', prob:10 },
+  { emoji:'📸', name:'¡Comparte un post y llévate una bebida gratis!', prob:15 },
+  { emoji:'🔄', name:'¡Sigue intentando! Mejor suerte la próxima vez', prob:20 },
+];
+
+// SCREEN NAV
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById('screen-' + id);
+  if (el) { el.classList.add('active'); el.scrollTop = 0; }
+}
+
+// INIT Firebase data
+async function initFirebaseData() {
+  const prizesRef = ref(db, 'config/prizes');
+  const snap = await get(prizesRef);
+  if (!snap.exists()) {
+    await set(prizesRef, DEFAULT_PRIZES);
+  }
+  const passRef = ref(db, 'config/password');
+  const passSnap = await get(passRef);
+  if (!passSnap.exists()) {
+    await set(passRef, 'punto84admin');
+  }
+}
+
+// VALIDATE CODE
+async function validateCode(code) {
+  const clean = code.trim().toUpperCase();
+  if (!clean) return { valid:false, msg:'Ingresa un código válido.' };
+  const codeRef = ref(db, 'codes/' + clean);
+  const snap = await get(codeRef);
+  if (!snap.exists()) return { valid:false, msg:'Código inválido. Verifica e intenta nuevamente.' };
+  const data = snap.val();
+  if (data.used) return { valid:false, msg:'Este código ya fue utilizado.' };
+  return { valid:true, code:clean };
+}
+
+async function markCodeUsed(code, prize) {
+  await update(ref(db, 'codes/' + code), {
+    used: true,
+    usedAt: Date.now(),
+    prizeEmoji: prize.emoji,
+    prizeName: prize.name,
+  });
+}
+
+// PRIZE SELECTION
+function selectPrize(prizes) {
+  const valid = prizes.filter(p => p.prob > 0);
+  if (!valid.length) return prizes[0];
+  const total = valid.reduce((s,p) => s+p.prob, 0);
+  let r = Math.random() * total;
+  for (const p of valid) { r -= p.prob; if (r <= 0) return p; }
+  return valid[valid.length-1];
+}
+
+// SCRATCH INIT
+function initScratch(prize) {
+  selectedPrize = prize;
+  scratchDone = false;
+  document.getElementById('prizeEmojiHidden').textContent = prize.emoji;
+  document.getElementById('prizeNameHidden').textContent = prize.name;
+  document.getElementById('progressFill').style.width = '0%';
+  document.getElementById('progressPct').textContent = '0%';
+  document.getElementById('scratchHint').style.opacity = '1';
+  document.getElementById('scratchHint').textContent = '👆 Desliza el dedo para raspar';
+
+  const canvas = document.getElementById('scratchCanvas');
+  const wrap = canvas.parentElement;
+  canvas.width = wrap.offsetWidth;
+  canvas.height = wrap.offsetHeight;
+  scratchCtx = canvas.getContext('2d');
+  scratchCtx.fillStyle = '#1a1208';
+  scratchCtx.fillRect(0, 0, canvas.width, canvas.height);
+  scratchCtx.globalAlpha = 0.1;
+  for (let x=0; x<canvas.width; x+=30) {
+    for (let y=0; y<canvas.height; y+=30) {
+      scratchCtx.fillStyle = '#c9a84c';
+      scratchCtx.font = 'bold 11px serif';
+      scratchCtx.fillText('P84', x, y+12);
+    }
+  }
+  scratchCtx.globalAlpha = 1;
+  scratchCtx.fillStyle = 'rgba(201,168,76,0.55)';
+  scratchCtx.font = 'bold 14px DM Sans, sans-serif';
+  scratchCtx.textAlign = 'center';
+  scratchCtx.fillText('✦ RASPA AQUÍ ✦', canvas.width/2, canvas.height/2-6);
+  scratchCtx.font = '11px DM Sans, sans-serif';
+  scratchCtx.fillStyle = 'rgba(201,168,76,0.35)';
+  scratchCtx.fillText('Desliza el dedo sobre la tarjeta', canvas.width/2, canvas.height/2+12);
+  scratchCtx.textAlign = 'left';
+  scratchCtx.globalCompositeOperation = 'destination-out';
+
+  canvas.addEventListener('mousedown', onStart);
+  canvas.addEventListener('mousemove', onMove);
+  canvas.addEventListener('mouseup', onEnd);
+  canvas.addEventListener('touchstart', onStart, {passive:true});
+  canvas.addEventListener('touchmove', onMove, {passive:true});
+  canvas.addEventListener('touchend', onEnd);
+}
+
+function getPos(e, canvas) {
+  const rect = canvas.getBoundingClientRect();
+  const src = e.touches ? e.touches[0] : e;
+  return { x:src.clientX-rect.left, y:src.clientY-rect.top };
+}
+
+function onStart(e) {
+  if (scratchDone) return;
+  scratching = true;
+  const pos = getPos(e, this);
+  scratchCtx.beginPath();
+  scratchCtx.arc(pos.x, pos.y, 22, 0, Math.PI*2);
+  scratchCtx.fill();
+  updateProgress();
+}
+
+function onMove(e) {
+  if (!scratching || scratchDone) return;
+  const pos = getPos(e, this);
+  scratchCtx.beginPath();
+  scratchCtx.arc(pos.x, pos.y, 22, 0, Math.PI*2);
+  scratchCtx.fill();
+  updateProgress();
+  if (navigator.vibrate) navigator.vibrate(1);
+}
+
+function onEnd() { scratching = false; }
+
+function updateProgress() {
+  const canvas = document.getElementById('scratchCanvas');
+  const data = scratchCtx.getImageData(0,0,canvas.width,canvas.height);
+  let t = 0;
+  for (let i=3; i<data.data.length; i+=4) { if (data.data[i]<128) t++; }
+  const pct = Math.round((t/(canvas.width*canvas.height))*100);
+  document.getElementById('progressFill').style.width = pct+'%';
+  document.getElementById('progressPct').textContent = pct+'%';
+  if (pct >= 60 && !scratchDone) {
+    scratchDone = true;
+    const canvas2 = document.getElementById('scratchCanvas');
+    scratchCtx.fillRect(0,0,canvas2.width,canvas2.height);
+    document.getElementById('scratchHint').textContent = '🎉 ¡Premio revelado!';
+    setTimeout(() => showPrizeScreen(selectedPrize), 800);
+  }
+}
+
+function showPrizeScreen(prize) {
+  document.getElementById('prizeEmojiDisplay').textContent = prize.emoji;
+  document.getElementById('prizeNameDisplay').textContent = prize.name;
+  const waMsg = encodeURIComponent(`Hola! Gané "${prize.name}" con mi raspadito Punto84 🎉`);
+  document.getElementById('btnWhatsapp').onclick = () => window.open(`https://wa.me/56938902407?text=${waMsg}`,'_blank');
+  document.getElementById('btnShare').onclick = () => {
+    if (navigator.share) {
+      navigator.share({ title:'¡Gané en Punto84!', text:`Gané "${prize.name}" en el raspadito de Punto84 🎉🍔`, url:window.location.href }).catch(()=>{});
+    } else {
+      navigator.clipboard.writeText(`Gané "${prize.name}" en el raspadito de Punto84! 🎉`).then(()=>{
+        document.getElementById('btnShare').textContent = '✓ COPIADO';
+      });
+    }
+  };
+  showScreen('prize');
+  launchConfetti();
+  if (navigator.vibrate) navigator.vibrate([100,50,100,50,200]);
+}
+
+// CONFETTI
+function launchConfetti() {
+  const canvas = document.getElementById('confettiCanvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  canvas.classList.add('active');
+  const particles = Array.from({length:70},()=>({
+    x:Math.random()*canvas.width, y:-10,
+    vx:(Math.random()-.5)*4, vy:Math.random()*4+2,
+    r:Math.random()*6+3,
+    color:COLORS[Math.floor(Math.random()*COLORS.length)],
+    rot:Math.random()*360, rotv:(Math.random()-.5)*8, alpha:1
+  }));
+  let frame=0;
+  function anim() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    particles.forEach(p => {
+      p.x+=p.vx; p.y+=p.vy; p.rot+=p.rotv; p.alpha-=0.009;
+      if(p.alpha<=0)return;
+      ctx.save(); ctx.globalAlpha=p.alpha;
+      ctx.translate(p.x,p.y); ctx.rotate(p.rot*Math.PI/180);
+      ctx.fillStyle=p.color; ctx.fillRect(-p.r/2,-p.r/2,p.r,p.r);
+      ctx.restore();
+    });
+    frame++;
+    if(frame<180) requestAnimationFrame(anim);
+    else { canvas.classList.remove('active'); ctx.clearRect(0,0,canvas.width,canvas.height); }
+  }
+  anim();
+}
+
+// CODE GEN
+function generateCode() {
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let c='P84-';
+  for(let i=0;i<6;i++) c+=chars[Math.floor(Math.random()*chars.length)];
+  return c;
+}
+
+async function generateCodes(qty) {
+  const btn = document.getElementById('btnGenCodes');
+  btn.disabled = true;
+  btn.textContent = 'GENERANDO...';
+  try {
+    const existing = Object.keys(currentCodes);
+    const newCodes = {};
+    let generated = 0;
+    while(generated < qty) {
+      const code = generateCode();
+      if(!existing.includes(code) && !newCodes[code]) {
+        newCodes[code] = { used:false, createdAt:Date.now() };
+        generated++;
+      }
+    }
+    const updates = {};
+    Object.entries(newCodes).forEach(([code,val]) => { updates['codes/'+code] = val; });
+    await update(ref(db), updates);
+    setStatus('✓ ' + qty + ' códigos generados', 'ok');
+  } catch(e) {
+    setStatus('Error generando códigos: ' + e.message, 'err');
+  }
+  btn.disabled = false;
+  btn.textContent = '⚡ GENERAR';
+}
+
+// ADMIN UI
+function renderPrizes(prizes) {
+  const list = document.getElementById('prizeList');
+  list.innerHTML = '';
+  prizes.forEach((p,i) => {
+    const row = document.createElement('div');
+    row.className = 'prize-item';
+    row.innerHTML = `
+      <input class="prize-emoji-input" value="${p.emoji||'🎁'}" maxlength="2" data-idx="${i}" data-field="emoji">
+      <input class="prize-name-input" value="${p.name||''}" data-idx="${i}" data-field="name" placeholder="Nombre del premio...">
+      <div class="prize-prob-wrap">
+        <input class="prize-prob-input" type="number" min="0" max="100" value="${p.prob||0}" data-idx="${i}" data-field="prob">
+        <span class="prize-prob-label">%</span>
+      </div>
+      <button class="btn-delete" data-idx="${i}">✕</button>
+    `;
+    list.appendChild(row);
+  });
+  list.querySelectorAll('input').forEach(inp => {
+    inp.addEventListener('input', () => {
+      const idx = +inp.dataset.idx;
+      const field = inp.dataset.field;
+      if(field==='prob') currentPrizes[idx].prob = Math.max(0,Math.min(100,+inp.value||0));
+      else currentPrizes[idx][field] = inp.value;
+      updateProbTotal();
+    });
+  });
+  list.querySelectorAll('.btn-delete').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentPrizes.splice(+btn.dataset.idx,1);
+      renderPrizes(currentPrizes);
+    });
+  });
+  updateProbTotal();
+}
+
+function updateProbTotal() {
+  const total = currentPrizes.reduce((s,p)=>s+(+p.prob||0),0);
+  const el = document.getElementById('probTotal');
+  el.textContent = total+'%';
+  el.className = 'prob-total-value '+(total===100?'ok':'bad');
+  const visual = document.getElementById('probVisual');
+  visual.innerHTML = '';
+  currentPrizes.forEach((p,i) => {
+    if(!p.prob) return;
+    const seg = document.createElement('div');
+    seg.className = 'prob-segment';
+    seg.style.width = p.prob+'%';
+    seg.style.background = COLORS[i%COLORS.length];
+    seg.style.opacity = '0.7';
+    visual.appendChild(seg);
+  });
+}
+
+function renderCodes(codes) {
+  const list = document.getElementById('codesList');
+  const entries = Object.entries(codes).sort((a,b)=>b[1].createdAt-a[1].createdAt);
+  if(!entries.length) { list.innerHTML = '<div class="codes-empty">No hay códigos generados aún</div>'; return; }
+  list.innerHTML = '';
+  entries.forEach(([code,data]) => {
+    const row = document.createElement('div');
+    row.className = 'code-row '+(data.used?'used':'');
+    const prizeHtml = data.used && data.prizeName
+      ? `<span class="code-prize">${data.prizeEmoji || '🎁'} ${data.prizeName}</span>`
+      : '';
+    row.innerHTML = `
+      <div class="code-row-main">
+        <span class="code-value">${code}</span>
+        <span class="code-status ${data.used?'used-s':'unused'}">${data.used?'USADO':'NUEVO'}</span>
+        <button class="btn-copy-code" data-code="${code}">📋</button>
+      </div>
+      ${prizeHtml}
+    `;
+    list.appendChild(row);
+  });
+  list.querySelectorAll('.btn-copy-code').forEach(btn => {
+    btn.addEventListener('click', () => {
+      navigator.clipboard.writeText(btn.dataset.code).then(()=>{
+        btn.textContent='✓'; btn.classList.add('copied');
+        setTimeout(()=>{ btn.textContent='📋'; btn.classList.remove('copied'); },1500);
+      });
+    });
+  });
+}
+
+function setStatus(msg, type='') {
+  const el = document.getElementById('adminStatus');
+  el.textContent = msg;
+  el.className = 'status-msg '+(type||'');
+  if(msg) setTimeout(()=>{ el.textContent=''; el.className='status-msg'; },3000);
+}
+
+// REALTIME LISTENER for codes
+function listenCodes() {
+  onValue(ref(db,'codes'), snap => {
+    currentCodes = snap.exists() ? snap.val() : {};
+    renderCodes(currentCodes);
+  });
+}
+
+// EVENTS
+document.getElementById('btnValidate').addEventListener('click', async () => {
+  const val = document.getElementById('codeInput').value;
+  const inp = document.getElementById('codeInput');
+  const errEl = document.getElementById('codeError');
+  const btn = document.getElementById('btnValidate');
+  btn.disabled = true;
+  btn.textContent = 'VALIDANDO...';
+  try {
+    const result = await validateCode(val);
+    if(!result.valid) {
+      inp.classList.add('error');
+      errEl.textContent = result.msg;
+      setTimeout(()=>inp.classList.remove('error'),500);
+      if(navigator.vibrate) navigator.vibrate([80,40,80]);
+    } else {
+      errEl.textContent = '';
+      const prizesSnap = await get(ref(db,'config/prizes'));
+      const prizes = prizesSnap.exists() ? Object.values(prizesSnap.val()) : DEFAULT_PRIZES;
+      const prize = selectPrize(prizes);
+      await markCodeUsed(result.code, prize);
+      showScreen('scratch');
+      setTimeout(()=>initScratch(prize),300);
+    }
+  } catch(e) {
+    errEl.textContent = 'Error de conexión. Intenta nuevamente.';
+  }
+  btn.disabled = false;
+  btn.textContent = 'VALIDAR CÓDIGO';
+});
+
+document.getElementById('codeInput').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('btnValidate').click(); });
+document.getElementById('codeInput').addEventListener('input', function() {
+  this.value = this.value.toUpperCase();
+  document.getElementById('codeError').textContent = '';
+  this.classList.remove('error');
+});
+
+document.getElementById('btnAgain').addEventListener('click', ()=>{ document.getElementById('codeInput').value=''; document.getElementById('codeError').textContent=''; showScreen('code'); });
+document.getElementById('adminLink').addEventListener('click', ()=>showScreen('admin-login'));
+
+document.getElementById('btnAdminLogin').addEventListener('click', async () => {
+  const pass = document.getElementById('adminPassInput').value;
+  const btn = document.getElementById('btnAdminLogin');
+  btn.disabled = true;
+  btn.textContent = 'VERIFICANDO...';
+  try {
+    const snap = await get(ref(db,'config/password'));
+    const storedPass = snap.exists() ? snap.val() : 'punto84admin';
+    if(pass === storedPass) {
+      document.getElementById('adminPassInput').value = '';
+      const prizesSnap = await get(ref(db,'config/prizes'));
+      currentPrizes = prizesSnap.exists() ? [...Object.values(prizesSnap.val())] : [...DEFAULT_PRIZES];
+      renderPrizes(currentPrizes);
+      listenCodes();
+      showScreen('admin');
+    } else {
+      const inp = document.getElementById('adminPassInput');
+      inp.classList.add('error');
+      document.getElementById('adminPassError').textContent = 'Contraseña incorrecta';
+      setTimeout(()=>{ inp.classList.remove('error'); document.getElementById('adminPassError').textContent=''; },2000);
+      if(navigator.vibrate) navigator.vibrate([80,40,80]);
+    }
+  } catch(e) {
+    document.getElementById('adminPassError').textContent = 'Error de conexión.';
+  }
+  btn.disabled = false;
+  btn.textContent = 'INGRESAR';
+});
+
+document.getElementById('adminPassInput').addEventListener('keydown', e=>{ if(e.key==='Enter') document.getElementById('btnAdminLogin').click(); });
+document.getElementById('btnAdminBack').addEventListener('click', ()=>{ document.getElementById('adminPassInput').value=''; document.getElementById('adminPassError').textContent=''; showScreen('code'); });
+document.getElementById('btnAdminExit').addEventListener('click', ()=>showScreen('code'));
+
+document.getElementById('btnAddPrize').addEventListener('click', ()=>{ currentPrizes.push({emoji:'🎁',name:'Nuevo premio',prob:0}); renderPrizes(currentPrizes); });
+
+document.getElementById('btnSavePrizes').addEventListener('click', async ()=>{
+  const total = currentPrizes.reduce((s,p)=>s+(+p.prob||0),0);
+  if(total!==100){ alert(`Las probabilidades deben sumar 100%. Actualmente suman ${total}%.`); return; }
+  const btn = document.getElementById('btnSavePrizes');
+  btn.disabled = true;
+  btn.textContent = 'GUARDANDO...';
+  try {
+    await set(ref(db,'config/prizes'), currentPrizes);
+    btn.classList.add('saved');
+    btn.textContent = '✓ GUARDADO';
+    setTimeout(()=>{ btn.textContent='GUARDAR PREMIOS'; btn.classList.remove('saved'); btn.disabled=false; },2000);
+  } catch(e) {
+    setStatus('Error guardando: '+e.message,'err');
+    btn.disabled=false; btn.textContent='GUARDAR PREMIOS';
+  }
+});
+
+document.getElementById('btnGenCodes').addEventListener('click', ()=>{ const qty = +document.getElementById('codeQty').value; generateCodes(qty); });
+
+document.getElementById('btnCopyAll').addEventListener('click', ()=>{
+  const unused = Object.keys(currentCodes).filter(c=>!currentCodes[c].used).join('\n');
+  if(!unused){ alert('No hay códigos sin usar.'); return; }
+  navigator.clipboard.writeText(unused).then(()=>{
+    const btn = document.getElementById('btnCopyAll');
+    btn.textContent='✓ COPIADOS';
+    setTimeout(()=>btn.textContent='📋 Copiar sin usar',2000);
+  });
+});
+
+document.getElementById('btnClearUsed').addEventListener('click', async ()=>{
+  if(!confirm('¿Eliminar todos los códigos ya usados?')) return;
+  const usedKeys = Object.keys(currentCodes).filter(c=>currentCodes[c].used);
+  if(!usedKeys.length){ alert('No hay códigos usados.'); return; }
+  const updates = {};
+  usedKeys.forEach(k=>{ updates['codes/'+k]=null; });
+  await update(ref(db),updates);
+  setStatus('✓ Códigos usados eliminados','ok');
+});
+
+document.getElementById('btnSavePass').addEventListener('click', async ()=>{
+  const newPass = document.getElementById('newPassInput').value.trim();
+  if(!newPass||newPass.length<4){ alert('La contraseña debe tener al menos 4 caracteres.'); return; }
+  await set(ref(db,'config/password'),newPass);
+  document.getElementById('newPassInput').value='';
+  const btn=document.getElementById('btnSavePass');
+  btn.textContent='✓ CONTRASEÑA ACTUALIZADA';
+  setTimeout(()=>btn.textContent='ACTUALIZAR CONTRASEÑA',2000);
+});
+
+// INIT
+if(window.location.search.includes('admin=true')) showScreen('admin-login');
+initFirebaseData();
+</script>
+</body>
+</html>
